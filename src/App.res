@@ -1,20 +1,28 @@
+open Reducer
+
 @react.component
 let make = () => {
-  let (count, setCount) = React.useState(() => 0)
+  let (state, dispatch) = reducer->React.useReducer({
+    todos: [],
+    nextId: 1,
+  })
+
+  let onAdd = value => {
+    switch value {
+    | Some(str) =>
+      if Js.String.trim(str) != "" {
+        str->AddTodo->dispatch
+      }
+    | None => ()
+    }
+  }
 
   <div className="p-6">
-    <h1 className="text-3xl font-semibold"> {"What is this about?"->React.string} </h1>
-    <p>
-      {React.string("This is a simple template for a Vite project using ReScript & Tailwind CSS.")}
-    </p>
-    <h2 className="text-2xl font-semibold mt-5"> {React.string("Fast Refresh Test")} </h2>
-    <Button onClick={_ => setCount(count => count + 1)}>
-      {React.string(`count is ${count->Int.toString}`)}
-    </Button>
-    <p>
-      {React.string("Edit ")}
-      <code> {React.string("src/App.res")} </code>
-      {React.string(" and save to test Fast Refresh.")}
-    </p>
+    <h1 className="text-3xl font-semibold text-center"> {"TO DO LIST"->React.string} </h1>
+    <div className="w-2/5 h-full min-h-28 shadow-xl my-5 mx-auto">
+      //-------------------- components ------------------------------
+      <AddToDo onAdd />
+      <ToDoList todos={state.todos} onDispatch={dispatch} />
+    </div>
   </div>
 }
